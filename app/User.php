@@ -1,5 +1,4 @@
 <?php
-
 namespace App;
 
 use Illuminate\Notifications\Notifiable;
@@ -35,11 +34,19 @@ class User extends Authenticatable
         return $this->morphedByMany('App\TouristObject', 'likeable');
     }
     
+    /* Lecture 22 */
+    public function larticles()
+    {
+        return $this->morphedByMany('App\Article', 'likeable');
+    }
+    
     /* Lecture 16 */
     public function photos()
     {
         return $this->morphMany('App\Photo', 'photoable');
     }
 }
+
+
 
 

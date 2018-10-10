@@ -146,7 +146,7 @@
                 <p><b> {{ $article->user->FullName }} <!-- Lecture 16 --></b>
                     <i>{{ $article->created_at }} <!-- Lecture 16 --></i>
                 </p>
-                <p>{{ str_limit($article->content,250) }} <!-- Lecture 16 --> </p> <a href="{{ route('article') }}">More</a>
+                <p>{{ str_limit($article->content,250) }} <!-- Lecture 16 --> </p> <a href="{{ route('article',['id'=>$article->id]/* Lecture 22 */) }}">More</a>
             </div>
 
         @endforeach <!-- Lecture 16 -->
@@ -155,6 +155,12 @@
     <a href="#" class="btn btn-primary btn-xs top-buffer">Like this object</a>
 </div>
 @endsection <!-- Lecture 5  -->
+
+
+
+
+
+
 
 
 

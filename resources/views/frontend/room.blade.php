@@ -73,6 +73,20 @@
 
 <!-- Lecture 20 -->
 <script>
+ 
+/* Lecture 21 */
+function datesBetween(startDt, endDt) {
+    var between = [];
+    var currentDate = new Date(startDt);
+    var end = new Date(endDt);
+    while (currentDate <= end)
+    {
+        between.push( $.datepicker.formatDate('mm/dd/yy',new Date(currentDate)) );
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+        return between;
+}
     
 $.ajax({
 
@@ -83,10 +97,26 @@ $.ajax({
 
 
         var eventDates = {};
-        var dates = ['02/15/2018', '02/16/2018', '02/25/2018'];
-        for (var i = 0; i <= dates.length; i++)
+        var dates = [/* Lecture 21 */];
+        
+        /* Lecture 21 */
+        for(var i = 0; i <= response.reservations.length - 1; i++)
         {
-            eventDates[ new Date(dates[i])] = new Date(dates[i]);
+            dates.push(datesBetween(new Date(response.reservations[i].day_in), new Date(response.reservations[i].day_out))); // array of arrays
+        }
+        
+        
+        /*  a = [1];
+            b = [2];
+            x = a.concat(b);
+            x = [1,2];
+            [ [1],[2],[3] ] => [1,2,3]  */
+        dates = [].concat.apply([], dates); /* Lecture 21 */   // flattened array
+
+        /* Lecture 21 */
+        for (var i = 0; i <= dates.length - 1; i++)
+        {
+            eventDates[dates[i]] = dates[i];
         }
 
 
@@ -111,8 +141,9 @@ $.ajax({
                 },
                 beforeShowDay: function (date)
                 {
+                    var tmp =  eventDates[$.datepicker.formatDate('mm/dd/yy', date)]; /* Lecture 21 */
                     //console.log(date);
-                    if (eventDates[date])
+                    if (tmp)
                         return [false, 'unavaiable_date'];
                     else
                         return [true, ''];
@@ -133,6 +164,17 @@ $.ajax({
 </script>
 
 @endpush <!-- Lecture 20 -->
+
+
+
+
+
+
+
+
+
+
+
 
 
 

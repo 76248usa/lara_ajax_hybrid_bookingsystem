@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -25,9 +24,10 @@ class FrontendController extends Controller
     }
     
     /* Lecture 6 */
-    public function article()
+    public function article($id/* Lecture 22 */)
     {
-        return view('frontend.article');
+        $article = $this->fR->getArticle($id); /* Lecture 22 */
+        return view('frontend.article',compact('article')/* Lecture 22 */); 
     }
     
     /* Lecture 6 */
@@ -91,6 +91,10 @@ class FrontendController extends Controller
     
     
 }
+
+
+
+
 
 
 
