@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Comment extends Model
 {
     use Enjoythetrip\Presenters\CommentPresenter;
+
+    public $timestamps = false;
     
     public function user(){
         return $this->belongsTo('App\User');

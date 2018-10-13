@@ -1,3 +1,4 @@
+
 @extends('layouts.frontend') <!-- Lecture 5  -->
 
 @section('content') <!-- Lecture 5  -->
@@ -37,7 +38,7 @@
 
             <ul class="list-inline">
                 @foreach( $object->users as $user) <!-- Lecture 16 -->
-                    <li><a href="{{ route('person') }}"><img title="{{ $user->FullName /* Lecture 16 */ }}" class="media-object img-responsive" width="50" height="50" src="{{ $user->photos->first()->path ?? $placeholder /* Lecture 16 */ }}" alt="..."> </a></li>
+                    <li><a href="{{ route('person',['id'=>$user->id]/* Lecture 23 */) }}"><img title="{{ $user->FullName /* Lecture 16 */ }}" class="media-object img-responsive" width="50" height="50" src="{{ $user->photos->first()->path ?? $placeholder /* Lecture 16 */ }}" alt="..."> </a></li>
 
                 @endforeach <!-- Lecture 16 -->
             </ul>
@@ -85,7 +86,7 @@
         @foreach( $object->comments as $comment ) <!-- Lecture 16 -->
             <div class="media">
                 <div class="media-left media-top">
-                    <a title="{{ $comment->user->FullName /* Lecture 16 */ }}" href="{{ route('person') }}">
+                    <a title="{{ $comment->user->FullName /* Lecture 16 */ }}" href="{{ route('person',['id'=>$comment->user->id]/* Lecture 23 */) }}">
                         <img class="media-object" width="50" height="50" src="{{ $comment->user->photos->first()->path ?? $placeholder /* Lecture 16 */ }}" alt="...">
                     </a>
                 </div>
@@ -97,15 +98,22 @@
             <hr>
         @endforeach <!-- Lecture 16 -->
     </section>
-
+    
+    <!-- Lecture 25 -->
+    @auth
     <a class="btn btn-primary" role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
         Add comment
     </a>
+    @else
+    <p><a href="{{ route('login') }}">Login to add a comment</a></p>
+    @endauth
+
+
     <div class="collapse" id="collapseExample">
         <div class="well">
 
 
-            <form method="POST" class="form-horizontal">
+            <form method="POST" action="{{ route('addComment',['object_id'=>$object->id, 'App\TouristObject'])/* Lecture 25 */ }}" class="form-horizontal">
                 <fieldset>
                     <div class="form-group">
                         <label for="textArea" class="col-lg-2 control-label">Comment</label>
@@ -133,6 +141,7 @@
                         </div>
                     </div>
                 </fieldset>
+                {{ csrf_field() }} <!-- Lecture 25 -->
             </form>
 
         </div>
@@ -151,10 +160,36 @@
 
         @endforeach <!-- Lecture 16 -->
     </section>
+    
+    <!-- Lecture 24 -->
+    @auth
+    
+        @if( $object->isLiked() )
+       <a href="{{ route('unlike',['id'=>$object->id,'type'=>'App\TouristObject']) }}" class="btn btn-primary btn-xs top-buffer">Unlike this object</a>
+        @else
+       <a href="{{ route('like',['id'=>$object->id,'type'=>'App\TouristObject']) }}" class="btn btn-primary btn-xs top-buffer">Like this object</a>
+        @endif 
+    
+    @else
+    
+    <p><a href="{{ route('login') }}">Login to like this object</a></p>
+  
+    @endauth
 
-    <a href="#" class="btn btn-primary btn-xs top-buffer">Like this object</a>
 </div>
 @endsection <!-- Lecture 5  -->
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

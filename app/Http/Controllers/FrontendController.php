@@ -10,6 +10,9 @@ class FrontendController extends Controller
     /* Lecture 12 */
     public function __construct(FrontendRepositoryInterface $frontendRepository, FrontendGateway $frontendGateway /* Lecture 17 */) /* Lecture 13 FrontendRepositoryInterface */
     {
+        
+        $this->middleware('auth')->only(['makeReservation','addComment','like','unlike']); /* Lecture 24 */
+
         $this->fR = $frontendRepository;
         $this->fG = $frontendGateway; /* Lecture 17 */
     }
@@ -34,14 +37,14 @@ class FrontendController extends Controller
     public function object($id) /* Lecture 15 $id */
     {
         $object = $this->fR->getObject($id); /* Lecture 15 */
-
         return view('frontend.object',['object'=>$object]); /* Lecture 16 second argument */
     }
     
     /* Lecture 6 */
-    public function person()
+    public function person($id/* Lecture 23 */)
     {
-        return view('frontend.person');
+        $user = $this->fR->getPerson($id); /* Lecture 23 */
+        return view('frontend.person', ['user'=>$user]/* Lecture 23 */);
     }
     
     /* Lecture 6 */
@@ -89,10 +92,63 @@ class FrontendController extends Controller
         return response()->json($results);
     }
     
+    /* Lecture 24 */
+    public function like($likeable_id, $type, Request $request)
+    {
+        $this->fR->like($likeable_id, $type, $request);
+
+        return redirect()->back();
+    }
+    
+    
+    /* Lecture 24 */
+    public function unlike($likeable_id, $type, Request $request)
+    {
+        $this->fR->unlike($likeable_id, $type, $request);
+        
+        return redirect()->back();
+    }
+    
+    
+    /* Lecture 25 */
+    public function addComment($commentable_id, $type, Request $request)
+    {
+        $this->fG->addComment($commentable_id, $type, $request);
+        
+        return redirect()->back();
+    }
+    
+    
+    /* Lecture 26 */
+    public function makeReservation($room_id, $city_id, Request $request)
+    {
+        
+        $avaiable = $this->fG->checkAvaiableReservations($room_id, $request);
+        
+        if(!$avaiable)
+        {
+            if (!$request->ajax())
+            {
+                $request->session()->flash('reservationMsg', __('There are no vacancies'));
+                return redirect()->route('room',['id'=>$room_id,'#reservation']); 
+            }
+            
+            return response()->json(['reservation'=>false]);
+        }
+        else
+        {     
+            $reservation = $this->fG->makeReservation($room_id, $city_id, $request);
+            
+            if (!$request->ajax())
+            return redirect()->route('adminHome'); 
+            else
+            return response()->json(['reservation'=>$reservation]);
+        }
+ 
+    }
+    
     
 }
-
-
 
 
 

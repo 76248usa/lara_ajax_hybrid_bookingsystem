@@ -1,9 +1,9 @@
-<?php 
+<?php
 
 namespace App\Enjoythetrip\Repositories; /* Lecture 12 */
 
 use App\Enjoythetrip\Interfaces\FrontendRepositoryInterface;  /* Lecture 13 */
-use App\{TouristObject,City/*Lecture 17*/,Room/* Lecture 20 */,Reservation/* Lecture 20 */,Article/* Lecture 22 */}; /* Lecture 12 */
+use App\{TouristObject,City/*Lecture 17*/,Room/* Lecture 20 */,Reservation/* Lecture 20 */,Article/* Lecture 22 */,User/* Lecture 23 */,Comment/* Lecture 25 */}; /* Lecture 12 */
 
 /* Lecture 12 */
 class FrontendRepository implements FrontendRepositoryInterface  {   /* Lecture 13 implements FrontendRepositoryInterface */
@@ -63,8 +63,75 @@ class FrontendRepository implements FrontendRepositoryInterface  {   /* Lecture 
         return  Article::with(['object.photos','comments'])->find($id);
     } 
     
+    /* Lecture 23 */
+    public function getPerson($id)
+    {
+        return  User::with(['objects','larticles','comments.commentable'])->find($id);
+    } 
+    
+    
+    /* Lecture 24 */
+    public function like($likeable_id, $type, $request)
+    {
+        $likeable = $type::find($likeable_id);
+      
+        return $likeable->users()->attach($request->user()->id);
+    }
+    
+    /* Lecture 24 */
+    public function unlike($likeable_id, $type, $request)
+    {
+        $likeable = $type::find($likeable_id);
+      
+        return $likeable->users()->detach($request->user()->id);
+    }
+    
+    
+    /* Lecture 25 */
+    public function addComment($commentable_id, $type, $request)
+    {
+        $commentable = $type::find($commentable_id);
+        
+        $comment = new Comment;
+ 
+        $comment->content = $request->input('content');
+
+        $comment->rating = $type == 'App\TouristObject' ? $request->input('rating') : 0;
+
+        $comment->user_id = $request->user()->id;
+        
+        return $commentable->comments()->save($comment);
+    }
+    
+    
+    /* Lecture 26 */
+    public function makeReservation($room_id, $city_id, $request)
+    {
+        return Reservation::create([
+                'user_id'=>$request->user()->id,
+                'city_id'=>$city_id,
+                'room_id'=>$room_id,
+                'status'=>0,
+                'day_in'=>date('Y-m-d', strtotime($request->input('checkin'))),
+                'day_out'=>date('Y-m-d', strtotime($request->input('checkout')))
+            ]);
+    }
+
+    
   
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
